@@ -4,5 +4,7 @@
     <string name="app_name">AISEntry</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="name_aise">艾斯</string>
+    <string name="name_minar">米娜</string>
 
 </resources>
