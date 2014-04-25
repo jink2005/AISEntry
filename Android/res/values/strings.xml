@@ -6,5 +6,6 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="name_aise">艾斯</string>
     <string name="name_minar">米娜</string>
+    <string name="msg_goto_iflytek">需要使用“讯飞语音+”服务合成语音，是否前往其官网下载？</string>
 
 </resources>
