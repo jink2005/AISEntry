@@ -1,5 +1,6 @@
 package cn.aiseminar.aisentry;
 
+import cn.aiseminar.aisentry.aimouth.AIMouth;
 import cn.aiseminar.aisentry.util.SystemUiHider;
 
 import android.annotation.TargetApi;
@@ -39,6 +40,7 @@ public class AISEntryActivity extends Activity {
      * The instance of the {@link SystemUiHider} for this activity.
      */
     private SystemUiHider mSystemUiHider;
+    private AIMouth mMouth = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,12 +119,23 @@ public class AISEntryActivity extends Activity {
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
-        AISystemLoader systemLoader = new AISystemLoader(this);
-        systemLoader.checkEnvironment();
     }
 
 
-    /**
+    @Override
+	protected void onStart() {
+		super.onStart();
+        AISystemLoader systemLoader = new AISystemLoader(this);
+        systemLoader.checkEnvironment();
+        
+		if (null == mMouth)
+		{
+			mMouth = new AIMouth(this);
+		}
+		mMouth.speak(this.getString(R.string.st_welcome));
+	}
+
+	/**
      * Touch listener to use for in-layout UI controls to delay hiding the
      * system UI. This is to prevent the jarring behavior of controls going away
      * while interacting with activity UI.
