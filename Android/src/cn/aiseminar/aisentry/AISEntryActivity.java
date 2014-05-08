@@ -1,13 +1,16 @@
 package cn.aiseminar.aisentry;
 
 import cn.aiseminar.aisentry.aimouth.AIMouth;
+import cn.aiseminar.aisentry.aimouth.AIMouth.TTS_State;
 import cn.aiseminar.aisentry.util.SystemUiHider;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -41,6 +44,7 @@ public class AISEntryActivity extends Activity {
      */
     private SystemUiHider mSystemUiHider;
     private AIMouth mMouth = null;
+    private Handler mMsgHandler = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +113,8 @@ public class AISEntryActivity extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        
+        mMsgHandler = new AISHandler();
     }
 
     @Override
@@ -131,8 +137,8 @@ public class AISEntryActivity extends Activity {
 		if (null == mMouth)
 		{
 			mMouth = new AIMouth(this);
+			mMouth.setMsgHandler(mMsgHandler);
 		}
-		mMouth.speak(this.getString(R.string.st_welcome));
 	}
 
 	/**
@@ -165,5 +171,19 @@ public class AISEntryActivity extends Activity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+    
+    @SuppressLint("HandlerLeak")
+	class AISHandler extends Handler
+    {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what)
+			{
+			case 1:
+				mMouth.speak(AISEntryActivity.this.getString(R.string.st_welcome));
+			}
+			super.handleMessage(msg);
+		}
     }
 }

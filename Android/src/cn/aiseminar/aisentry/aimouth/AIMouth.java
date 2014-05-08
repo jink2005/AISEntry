@@ -1,6 +1,8 @@
 package cn.aiseminar.aisentry.aimouth;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.os.RemoteException;
 import android.os.SystemClock;
 
@@ -19,6 +21,8 @@ public class AIMouth extends Object {
 	private SpeechSynthesizer mSpeechSynthesizer = null;
 	private TTS_State mSynthesizerState = TTS_State.TTS_INITING;
 	
+	private Handler mMsgHandler = null;
+	
 	public AIMouth(Context context)
 	{
 		mContext = context;
@@ -30,10 +34,21 @@ public class AIMouth extends Object {
 				if (arg1 == ErrorCode.SUCCESS)
 				{
 					mSynthesizerState = TTS_State.TTS_READY;
-				}	
+					Message mess = new Message();
+					mess.what = mSynthesizerState.ordinal();
+					mMsgHandler.sendMessage(mess);
+				}
 			}
 		});
 		setVoiceReference();
+	}
+	
+	public Handler getMsgHandler() {
+		return mMsgHandler;
+	}
+
+	public void setMsgHandler(Handler mMsgHandler) {
+		this.mMsgHandler = mMsgHandler;
 	}
 		
 	@Override
@@ -59,7 +74,7 @@ public class AIMouth extends Object {
 //		}
 		mSpeechSynthesizer.startSpeaking(sentence, mSynthesizerListener);
 	}
-	
+
 	private SynthesizerListener mSynthesizerListener = new SynthesizerListener.Stub() {
 		
 		@Override
