@@ -4,8 +4,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
-import android.os.SystemClock;
-
 import com.iflytek.speech.*;
 
 public class AIMouth extends Object {
@@ -68,10 +66,6 @@ public class AIMouth extends Object {
 	
 	public void speak(String sentence)
 	{
-//		while (mSynthesizerState != TTS_State.TTS_READY)
-//		{
-//			SystemClock.sleep(100);
-//		}
 		mSpeechSynthesizer.startSpeaking(sentence, mSynthesizerListener);
 	}
 
