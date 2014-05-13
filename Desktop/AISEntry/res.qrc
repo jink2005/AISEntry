@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/images">
+        <file alias="icon">images/ic_launcher.png</file>
+        <file alias="icon_mask">images/ic_launcher_mask.png</file>
+    </qresource>
+</RCC>
