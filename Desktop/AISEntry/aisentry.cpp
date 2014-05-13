@@ -7,6 +7,8 @@ AISEntry::AISEntry(QWidget *parent)
     /**
      * Set backgroud and window shape
      */
+    setFixedSize(72, 72);
+
     QPixmap pixmap(":/images/icon");
     setWindowIcon(QIcon(pixmap));
 
@@ -16,6 +18,8 @@ AISEntry::AISEntry(QWidget *parent)
 
     QBitmap maskBitMap(":/images/icon_mask");
     setMask(maskBitMap);
+
+    setMouseTracking(true);
 
     /**
      * set context menu
