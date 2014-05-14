@@ -19,3 +19,5 @@ HEADERS  += aisentry.h
 
 RESOURCES += \
     res.qrc
+
+TRANSLATIONS += lang_CN.ts
