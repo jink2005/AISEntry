@@ -25,6 +25,7 @@ protected:
 
 private:
     void setWindowShape();
+    QString getClipboard();
 
 private:
     QPoint dragPosition;

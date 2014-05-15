@@ -24,9 +24,9 @@ AISEntry::AISEntry(QWidget *parent)
 //    addAction(speakAction);
     connect(this, SIGNAL(buttonClickedEvent(QMouseEvent*)), SLOT(speak()));
 
-//    QAction *aboutAction = new QAction(tr("&About"), this);
-//    connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
-//    addAction(aboutAction);
+    QAction *aboutAction = new QAction(tr("&About"), this);
+    connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
+    addAction(aboutAction);
 
     QAction *quitAction = new QAction(tr("E&xit"), this);
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -116,7 +116,15 @@ void AISEntry::speak()
         keybd_event('C', MapVirtualKey('C', 0), 0, 0);
         keybd_event('C', MapVirtualKey('C', 0), KEYEVENTF_KEYUP, 0);
         keybd_event(VK_CONTROL, MapVirtualKey(VK_CONTROL, 0), KEYEVENTF_KEYUP, 0);
+
+        QMessageBox::information(NULL, "Clipboard", getClipboard());
     }
+}
+
+QString AISEntry::getClipboard()
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    return clipboard->text();
 }
 
 void AISEntry::about()
