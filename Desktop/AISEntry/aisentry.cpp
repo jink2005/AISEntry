@@ -1,10 +1,10 @@
 #include "aisentry.h"
 #include <QtWidgets>
+#include <qt_windows.h>
 
 AISEntry::AISEntry(QWidget *parent)
     : QWidget(parent, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::WindowSystemMenuHint)
 {
-    setFocusPolicy(Qt::ClickFocus);
     /**
      * Set backgroud and window shape
      */
@@ -15,20 +15,18 @@ AISEntry::AISEntry(QWidget *parent)
 
     setMouseTracking(true);
 
-    connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(focusChanged(QWidget*,QWidget*)));
-
     /**
      * set context menu
      */
 
-    QAction *speakAction = new QAction(tr("&Speak"), this);
-    connect(speakAction, SIGNAL(triggered()), this, SLOT(speak()));
-    addAction(speakAction);
+//    QAction *speakAction = new QAction(tr("&Speak"), this);
+//    connect(speakAction, SIGNAL(triggered()), this, SLOT(speak()));
+//    addAction(speakAction);
     connect(this, SIGNAL(buttonClickedEvent(QMouseEvent*)), SLOT(speak()));
 
-    QAction *aboutAction = new QAction(tr("&About"), this);
-    connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
-    addAction(aboutAction);
+//    QAction *aboutAction = new QAction(tr("&About"), this);
+//    connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
+//    addAction(aboutAction);
 
     QAction *quitAction = new QAction(tr("E&xit"), this);
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -57,9 +55,6 @@ void AISEntry::setWindowShape()
 
 void AISEntry::mousePressEvent(QMouseEvent *event)
 {
-    QWidget *activeWnd = QApplication::activeWindow();
-    qDebug() << "PRESS " << activeWnd << " THIS " << this << " POS " << focusPolicy();
-
     if (Qt::LeftButton == event->button())
     {
         dragPosition = event->globalPos() - frameGeometry().topLeft();
@@ -70,8 +65,6 @@ void AISEntry::mousePressEvent(QMouseEvent *event)
 
 void AISEntry::mouseReleaseEvent(QMouseEvent *event)
 {
-    QWidget *activeWnd = QApplication::activeWindow();
-    qDebug() << "RELEASE " << activeWnd;
     if (Qt::LeftButton == event->button())
     {
         ulong timestampDiff = event->timestamp() - mousePressTimestamp;
@@ -104,6 +97,7 @@ void AISEntry::mouseMoveEvent(QMouseEvent *event)
         if (mousePosition.ry() < frameGeometry().height() / 2)
         {
             setCursor(Qt::PointingHandCursor);
+            concernedWnd = GetForegroundWindow(); // Record the current focus window
         }
         else
         {
@@ -112,25 +106,21 @@ void AISEntry::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void AISEntry::focusInEvent(QFocusEvent *event)
-{
-    QWidget *activeWnd = QApplication::activeWindow();
-    qDebug() << "focus " << activeWnd << " THIS " << this;
-}
-
 void AISEntry::speak()
 {
-    QMessageBox::information(NULL, tr("test"), tr("Clicked"));
+    if (NULL != concernedWnd && (HWND)this->winId() != concernedWnd)
+    {
+        SetForegroundWindow(concernedWnd);
+
+        keybd_event(VK_CONTROL, MapVirtualKey(VK_CONTROL, 0), 0, 0);
+        keybd_event('C', MapVirtualKey('C', 0), 0, 0);
+        keybd_event('C', MapVirtualKey('C', 0), KEYEVENTF_KEYUP, 0);
+        keybd_event(VK_CONTROL, MapVirtualKey(VK_CONTROL, 0), KEYEVENTF_KEYUP, 0);
+    }
 }
 
 void AISEntry::about()
 {
     QUrl url("http://www.aiseminar.cn/bbs/forum.php?mod=group&fid=157");
     QDesktopServices::openUrl(url);
-}
-
-void AISEntry::focusChanged(QWidget *old, QWidget *now)
-{
-    QWidget *activeWnd = QApplication::activeWindow();
-    qDebug() << "old " << old << " now " << now << " act" << activeWnd;
 }

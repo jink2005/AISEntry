@@ -14,7 +14,6 @@ public:
 public Q_SLOTS:
     void speak();
     void about();
-    void focusChanged(QWidget *old, QWidget *now);
 
 Q_SIGNALS:
     void buttonClickedEvent(QMouseEvent *event);
@@ -23,7 +22,6 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
-    void focusInEvent(QFocusEvent *event);
 
 private:
     void setWindowShape();
@@ -31,6 +29,7 @@ private:
 private:
     QPoint dragPosition;
     ulong mousePressTimestamp;
+    HWND concernedWnd;
 };
 
 #endif // AISENTRY_H
