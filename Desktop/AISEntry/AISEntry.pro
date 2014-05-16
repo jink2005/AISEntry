@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,9 +13,17 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        aisentry.cpp
+        aisentry.cpp \
+    peermanager.cpp \
+    connection.cpp \
+    server.cpp \
+    transceiver.cpp
 
-HEADERS  += aisentry.h
+HEADERS  += aisentry.h \
+    peermanager.h \
+    connection.h \
+    server.h \
+    transceiver.h
 
 RESOURCES += \
     res.qrc
