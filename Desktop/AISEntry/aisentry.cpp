@@ -117,7 +117,12 @@ void AISEntry::speak()
         keybd_event('C', MapVirtualKey('C', 0), KEYEVENTF_KEYUP, 0);
         keybd_event(VK_CONTROL, MapVirtualKey(VK_CONTROL, 0), KEYEVENTF_KEYUP, 0);
 
-        QMessageBox::information(NULL, "Clipboard", getClipboard());
+        QThread::sleep(1); // waiting 1s for the clipcoard data to change
+        QString data = getClipboard();
+        if (! data.isEmpty())
+        {
+            myTransceiver.sendMessage(data);
+        }
     }
 }
 

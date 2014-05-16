@@ -2,6 +2,7 @@
 #define AISENTRY_H
 
 #include <QWidget>
+#include "transceiver.h"
 
 class AISEntry : public QWidget
 {
@@ -11,12 +12,12 @@ public:
     AISEntry(QWidget *parent = 0);
     ~AISEntry();
 
-public Q_SLOTS:
+signals:
+    void buttonClickedEvent(QMouseEvent *event);
+
+public slots:
     void speak();
     void about();
-
-Q_SIGNALS:
-    void buttonClickedEvent(QMouseEvent *event);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -30,7 +31,9 @@ private:
 private:
     QPoint dragPosition;
     ulong mousePressTimestamp;
-    HWND concernedWnd;
+    HWND concernedWnd; // for record the active window to get selection
+
+    Transceiver myTransceiver;
 };
 
 #endif // AISENTRY_H
