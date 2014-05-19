@@ -1,7 +1,6 @@
 package cn.aiseminar.aisentry;
 
 import cn.aiseminar.aisentry.aimouth.AIMouth;
-import cn.aiseminar.aisentry.transceiver.Transceiver;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.os.Message;
 public class AISEntryActivity extends Activity {
 
     private AIMouth mMouth = null;
-    private Transceiver mTransceiver = null;
     private Handler mMsgHandler = null;
 
     @Override
@@ -33,12 +31,6 @@ public class AISEntryActivity extends Activity {
 		{
 			mMouth = new AIMouth(this);
 			mMouth.setMsgHandler(mMsgHandler);
-		}
-		
-		if (null == mTransceiver)
-		{
-			mTransceiver = new Transceiver(this);
-			mTransceiver.startBroadcasting();
 		}
 	}
     

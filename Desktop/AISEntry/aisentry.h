@@ -16,7 +16,6 @@ signals:
     void buttonClickedEvent(QMouseEvent *event);
 
 public slots:
-    void showServerInfo();
     void speak();
     void about();
 

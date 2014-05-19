@@ -56,11 +56,6 @@ Transceiver::Transceiver()
                      this, SLOT(newConnection(Connection*)));
 }
 
-QString Transceiver::getServerInfo()
-{
-    return QString("%1:%2").arg(server.serverAddress().toString()).arg(QString::number(server.serverPort()));
-}
-
 void Transceiver::sendMessage(const QString &message)
 {
     if (message.isEmpty())
