@@ -55,7 +55,7 @@ class Transceiver : public QObject
 
 public:
     Transceiver();
-
+    QString getServerInfo();
     void sendMessage(const QString &message);
     QString nickName() const;
     bool hasConnection(const QHostAddress &senderIp, int senderPort = -1) const;
