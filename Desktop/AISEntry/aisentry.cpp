@@ -19,6 +19,10 @@ AISEntry::AISEntry(QWidget *parent)
      * set context menu
      */
 
+    QAction *showServerInfoAction = new QAction(tr("Server &Info"), this);
+    connect(showServerInfoAction, SIGNAL(triggered()), this, SLOT(showServerInfo()));
+    addAction(showServerInfoAction);
+
 //    QAction *speakAction = new QAction(tr("&Speak"), this);
 //    connect(speakAction, SIGNAL(triggered()), this, SLOT(speak()));
 //    addAction(speakAction);
@@ -104,6 +108,11 @@ void AISEntry::mouseMoveEvent(QMouseEvent *event)
             setCursor(Qt::ArrowCursor);
         }
     }
+}
+
+void AISEntry::showServerInfo()
+{
+    QMessageBox::information(NULL, tr("Server Info"), myTransceiver.getServerInfo());
 }
 
 void AISEntry::speak()
