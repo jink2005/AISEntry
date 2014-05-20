@@ -39,6 +39,7 @@ public class AISEntryActivity extends Activity {
 		{
 			mTransceiver = new Transceiver(this);
 			mTransceiver.startBroadcasting();
+			mTransceiver.connectToEntry("172.25.6.138", 47820);
 		}
 	}
     
