@@ -17,6 +17,8 @@ signals:
 
 public slots:
     void showServerInfo();
+    void incomeMessage(const QString &from, const QString &message);
+    void newConnection(const QString &partner);
     void speak();
     void about();
 

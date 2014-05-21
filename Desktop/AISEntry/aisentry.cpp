@@ -38,6 +38,10 @@ AISEntry::AISEntry(QWidget *parent)
 
     setContextMenuPolicy(Qt::ActionsContextMenu);
     setWindowTitle(tr("AISEntry"));
+
+    /* process with transceiver */
+    connect(&myTransceiver, SIGNAL(newMessage(QString,QString)), this, SLOT(incomeMessage(QString,QString)));
+    connect(&myTransceiver, SIGNAL(newParticipant(QString)), this, SLOT(newConnection(QString)));
 }
 
 AISEntry::~AISEntry()
@@ -112,7 +116,32 @@ void AISEntry::mouseMoveEvent(QMouseEvent *event)
 
 void AISEntry::showServerInfo()
 {
-    QMessageBox::information(NULL, tr("Server Info"), myTransceiver.getServerInfo());
+    QToolTip::showText(frameGeometry().topRight(), myTransceiver.getServerInfo());
+//    QMessageBox::information(NULL, tr("Server Info"), myTransceiver.getServerInfo());
+}
+
+void AISEntry::incomeMessage(const QString &from, const QString &message)
+{
+    if (from.isEmpty() || message.isEmpty())
+        return;
+
+    QString text = QToolTip::text();
+    if (! text.isEmpty())
+        text.append("\n");
+
+    QToolTip::showText(frameGeometry().topRight(), text + from + ":\n" + message);
+}
+
+void AISEntry::newConnection(const QString &partner)
+{
+    if (partner.isEmpty())
+        return;
+
+    QString text = QToolTip::text();
+    if (! text.isEmpty())
+        text.append("\n");
+
+    QToolTip::showText(frameGeometry().topRight(), text + partner + " has connected!");
 }
 
 void AISEntry::speak()
