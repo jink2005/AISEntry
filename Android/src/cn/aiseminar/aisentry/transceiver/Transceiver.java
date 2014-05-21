@@ -8,19 +8,25 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.EnumSet;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import cn.aiseminar.aisentry.AISMessageCode;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
-public class Transceiver {
+public class Transceiver {	
 	private Context mContext = null;
 	private String mEntryName = null;
+	private Handler mMsgHandler = null;
+	
+	private boolean mbBroadcastOpen = false;
 	private MulticastSocket mBroadcastSocket = null;
 	private BroadcastServer mBroadcastServer = null;
 	
@@ -36,23 +42,33 @@ public class Transceiver {
 		}
 	};
 	
+	/* Getter & setter */
+	public Handler getMsgHandler() {
+		return mMsgHandler;
+	}
+
+	public void setMsgHandler(Handler msgHandler) {
+		this.mMsgHandler = msgHandler;
+	}
+	
+	/* Constructor */
 	public Transceiver(Context context)
 	{
 		mContext = context;
 		mEntryName = Build.MODEL;
 		
-		try {
-			mBroadcastSocket = new MulticastSocket(BROADCAST_PORT);
-			InetAddress broadcastAddress = InetAddress.getByName(BROADCAST_IP);
-			mBroadcastSocket.joinGroup(broadcastAddress);
-			
-			mBroadcastServer = new BroadcastServer();
-			mBroadcastServer.start();
-
-
-			
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (mbBroadcastOpen)
+		{
+			try {
+				mBroadcastSocket = new MulticastSocket(BROADCAST_PORT);
+				InetAddress broadcastAddress = InetAddress.getByName(BROADCAST_IP);
+				mBroadcastSocket.joinGroup(broadcastAddress);
+				
+				mBroadcastServer = new BroadcastServer();
+				mBroadcastServer.start();				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -70,6 +86,9 @@ public class Transceiver {
 	 */
 	public void startBroadcasting()
 	{
+		if (! mbBroadcastOpen)
+			return;
+		
 		if (null == mBroadcastTimer)
 		{
 			mBroadcastTimer = new Timer();
@@ -266,10 +285,16 @@ public class Transceiver {
 				switch(curDataType)
 				{
 				case DATATYPE_PING:
-					write("POING 1 p".getBytes());
+					write("PONG 1 p".getBytes());
 					break;
 				case DATATYPE_PLAINTEXT:
-					Log.d(mEntryName, pureData);
+					if (null != mMsgHandler)
+					{
+						Message msg = new Message();
+						msg.what = AISMessageCode.TRANSCEIVER_MSG_BASE + DATATYPE_PLAINTEXT;
+						msg.obj = pureData;
+						mMsgHandler.sendMessage(msg);
+					}					
 					break;
 				}				
 			}

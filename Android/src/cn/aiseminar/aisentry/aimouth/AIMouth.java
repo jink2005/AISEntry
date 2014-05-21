@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
+import cn.aiseminar.aisentry.AISMessageCode;
+
 import com.iflytek.speech.*;
 
 public class AIMouth extends Object {
@@ -33,7 +35,7 @@ public class AIMouth extends Object {
 				{
 					mSynthesizerState = TTS_State.TTS_READY;
 					Message mess = new Message();
-					mess.what = mSynthesizerState.ordinal();
+					mess.what = AISMessageCode.MOUTH_MSG_BASE + mSynthesizerState.ordinal();
 					mMsgHandler.sendMessage(mess);
 				}
 			}

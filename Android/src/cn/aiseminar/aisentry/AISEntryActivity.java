@@ -2,6 +2,7 @@ package cn.aiseminar.aisentry;
 
 import cn.aiseminar.aisentry.aimouth.AIMouth;
 import cn.aiseminar.aisentry.transceiver.Transceiver;
+import cn.aiseminar.aisentry.transceiver.Transceiver.DataTransferThread;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
@@ -38,8 +39,9 @@ public class AISEntryActivity extends Activity {
 		if (null == mTransceiver)
 		{
 			mTransceiver = new Transceiver(this);
+			mTransceiver.setMsgHandler(mMsgHandler);
 			mTransceiver.startBroadcasting();
-			mTransceiver.connectToEntry("172.25.6.138", 47820);
+			mTransceiver.connectToEntry("172.25.6.138", 39153);
 		}
 	}
     
@@ -48,11 +50,25 @@ public class AISEntryActivity extends Activity {
     {
 		@Override
 		public void handleMessage(Message msg) {
-			switch (msg.what)
+			if (AISMessageCode.MOUTH_MSG_BASE + AIMouth.TTS_State.TTS_READY.ordinal() == msg.what)
 			{
-			case 1:
-				mMouth.speak(AISEntryActivity.this.getString(R.string.st_welcome));
+				if (null != mMouth)
+				{
+					mMouth.speak(AISEntryActivity.this.getString(R.string.st_welcome));
+				}
+				return;
 			}
+			
+			if (AISMessageCode.TRANSCEIVER_MSG_BASE + DataTransferThread.DATATYPE_PLAINTEXT == msg.what)
+			{
+				if (null != mMouth && null != msg.obj)
+				{
+					String message = (String) msg.obj;
+					mMouth.speak(message);
+				}
+				return;
+			}
+			
 			super.handleMessage(msg);
 		}
     }
