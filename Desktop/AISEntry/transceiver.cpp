@@ -58,7 +58,21 @@ Transceiver::Transceiver()
 
 QString Transceiver::getServerInfo()
 {
-    return QString("%1:%2").arg(server.serverAddress().toString()).arg(QString::number(server.serverPort()));
+    QString info;
+    foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
+        foreach (QNetworkAddressEntry entry, interface.addressEntries()) {
+            QHostAddress broadcastAddress = entry.broadcast();
+            if (broadcastAddress != QHostAddress::Null && entry.ip() != QHostAddress::LocalHost) {
+                if (! info.isEmpty())
+                {
+                    info.append("/");
+                }
+                info.append(entry.ip().toString());
+            }
+        }
+    }
+    info.append(":");
+    return info.append(QString::number(server.serverPort()));
 }
 
 void Transceiver::sendMessage(const QString &message)

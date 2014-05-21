@@ -5,9 +5,14 @@ import cn.aiseminar.aisentry.transceiver.Transceiver;
 import cn.aiseminar.aisentry.transceiver.Transceiver.DataTransferThread;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.EditText;
 
 public class AISEntryActivity extends Activity {
 
@@ -21,6 +26,15 @@ public class AISEntryActivity extends Activity {
 
         setContentView(R.layout.activity_aisentry);
         mMsgHandler = new AISHandler();
+        
+        View fullView = findViewById(R.id.entryImage);
+        fullView.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				connectToEntry();
+			}
+		});
     }
 
     @Override
@@ -41,9 +55,29 @@ public class AISEntryActivity extends Activity {
 			mTransceiver = new Transceiver(this);
 			mTransceiver.setMsgHandler(mMsgHandler);
 			mTransceiver.startBroadcasting();
-			mTransceiver.connectToEntry("172.25.6.138", 39153);
 		}
 	}
+    
+    private void connectToEntry()
+    {
+    	final EditText inputServer = new EditText(this);
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	builder.setTitle("Connect to PC Entry").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer);
+    	builder.setNegativeButton(android.R.string.cancel, null);
+    	builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				String serverInfo = inputServer.getText().toString();
+				int seperPos = serverInfo.indexOf(":");
+				String ipAddress = serverInfo.substring(0, seperPos);
+				String ipPort = serverInfo.substring(seperPos + 1);
+				
+				mTransceiver.connectToEntry(ipAddress, Integer.parseInt(ipPort));
+			}
+		});
+    	builder.show();
+    }
     
     @SuppressLint("HandlerLeak")
 	class AISHandler extends Handler
