@@ -116,7 +116,7 @@ void AISEntry::mouseMoveEvent(QMouseEvent *event)
 
 void AISEntry::showServerInfo()
 {
-    QToolTip::showText(frameGeometry().topRight(), myTransceiver.getServerInfo());
+    QToolTip::showText(frameGeometry().topRight(), myTransceiver.getServerInfo(), 0, QRect(), 30000);
 //    QMessageBox::information(NULL, tr("Server Info"), myTransceiver.getServerInfo());
 }
 
