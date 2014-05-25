@@ -1,38 +1,69 @@
 package cn.aiseminar.aisentry;
 
 import cn.aiseminar.aisentry.aimouth.AIMouth;
+import cn.aiseminar.aisentry.reader.BookShelfActivity;
 import cn.aiseminar.aisentry.transceiver.Transceiver;
 import cn.aiseminar.aisentry.transceiver.Transceiver.DataTransferThread;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.Window;
 import android.widget.EditText;
+import android.widget.ViewFlipper;
 
 public class AISEntryActivity extends Activity {
 
     private AIMouth mMouth = null;
     private Transceiver mTransceiver = null;
     private Handler mMsgHandler = null;
+    
+    private ViewFlipper mViewFlipper = null;
+    private GestureDetector mGestureDetector = null;
+    
+    private View mEntryView = null;
+    private View mReaderView = null;
+    
+    int test = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        
+        requestWindowFeature(Window.FEATURE_NO_TITLE); // hidden title        
         setContentView(R.layout.activity_aisentry);
+        
         mMsgHandler = new AISHandler();
         
-        View fullView = findViewById(R.id.entryImage);
-        fullView.setOnClickListener(new OnClickListener() {
+        mGestureDetector = new GestureDetector(this, new AISOnGestureListener());
+        mViewFlipper = (ViewFlipper) findViewById(R.id.viewFlipper);
+        
+        mEntryView = findViewById(R.id.entryImage);
+        mEntryView.setLongClickable(true);
+        mEntryView.setOnTouchListener(new OnTouchListener() {
 			
 			@Override
-			public void onClick(View arg0) {
-				connectToEntry();
+			public boolean onTouch(View v, MotionEvent event) {				
+				return mGestureDetector.onTouchEvent(event);
+			}
+		});
+        
+        mReaderView = findViewById(R.id.readerView);
+        mReaderView.setLongClickable(true);
+        mReaderView.setOnTouchListener(new OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {				
+				return mGestureDetector.onTouchEvent(event);
 			}
 		});
     }
@@ -78,7 +109,7 @@ public class AISEntryActivity extends Activity {
 		});
     	builder.show();
     }
-    
+	
     @SuppressLint("HandlerLeak")
 	class AISHandler extends Handler
     {
@@ -105,5 +136,55 @@ public class AISEntryActivity extends Activity {
 			
 			super.handleMessage(msg);
 		}
+    }
+    
+    class AISOnGestureListener extends SimpleOnGestureListener
+    {
+		@Override
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+				float velocityY) {
+			int fling_min_distance = 100;
+			int fling_min_velocity = 200;
+			
+			if (Math.abs(velocityX) > fling_min_velocity)
+			{
+				if (e1.getX() - e2.getX() > fling_min_distance) // right in
+				{
+					if (mViewFlipper.getCurrentView() == mReaderView)
+					{
+						mViewFlipper.setInAnimation(AISEntryActivity.this, R.anim.anim_right_in);
+						mViewFlipper.setOutAnimation(AISEntryActivity.this, R.anim.anim_left_out);
+						mViewFlipper.showPrevious();
+					}
+				}
+				else if (e2.getX() - e1.getX() > fling_min_distance) // left in
+				{
+					if (mViewFlipper.getCurrentView() == mEntryView)
+					{
+						mViewFlipper.setInAnimation(AISEntryActivity.this, R.anim.anim_left_in);
+						mViewFlipper.setOutAnimation(AISEntryActivity.this, R.anim.anim_right_out);
+						mViewFlipper.showNext();
+					}
+				}
+			}
+			
+			return super.onFling(e1, e2, velocityX, velocityY);
+		}
+
+		@Override
+		public boolean onSingleTapConfirmed(MotionEvent e) {
+			if (mViewFlipper.getCurrentView() == mEntryView)
+			{
+				connectToEntry();
+			}
+			else if (mViewFlipper.getCurrentView() == mReaderView)
+			{
+				Intent readerIntent = new Intent(AISEntryActivity.this, BookShelfActivity.class);
+				startActivity(readerIntent);
+			}
+			return super.onSingleTapConfirmed(e);
+		} 
+		
+		
     }
 }

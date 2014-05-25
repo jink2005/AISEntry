@@ -26,6 +26,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".reader.BookShelfActivity"></activity>
+        <activity android:name=".reader.SelectFileActivity"></activity>
+        <activity android:name=".reader.FileReader"></activity>
     </application>
 
 </manifest>

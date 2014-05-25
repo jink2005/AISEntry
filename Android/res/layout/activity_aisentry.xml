@@ -6,26 +6,30 @@
     tools:context=".AISEntryActivity" 
     android:fitsSystemWindows="true" > 
 
-    <!--
-         This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows.
-    -->
-    
-    <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/spacebg"
-            android:id="@+id/fullscreen_content" >
+    <ViewFlipper
+        android:id="@+id/viewFlipper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/spacebg" >
 
             <ImageView
                 android:id="@+id/entryImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:src="@drawable/aise"
+                android:scaleType="center"
                 android:contentDescription="@string/name_aise" />
+            
+            <ImageView
+                android:id="@+id/readerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/cover_txt"
+                android:scaleType="center"
+                android:contentDescription="@string/name_aise" />
+        
+    </ViewFlipper>
+    
 
-        </RelativeLayout>
 
 </FrameLayout>

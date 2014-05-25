@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <cn.aiseminar.aisentry.reader.BookShelfGridView
+        android:id="@+id/bookShelfView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:cacheColorHint="#00000000"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:numColumns="3"
+        android:columnWidth="90.0dip"
+        android:horizontalSpacing="5dip"
+        android:listSelector="#00000000"
+        android:verticalSpacing="20dip"
+        android:fadingEdge="none"
+        android:scrollbars="none" >
+    </cn.aiseminar.aisentry.reader.BookShelfGridView>
+
+</RelativeLayout>
