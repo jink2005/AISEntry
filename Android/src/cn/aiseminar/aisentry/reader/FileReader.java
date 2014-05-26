@@ -8,9 +8,12 @@ import java.io.InputStreamReader;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 /**
  * 
@@ -23,12 +26,15 @@ public class FileReader extends Activity {
 	private static final String defaultCode = gb2312;
 	
 	private String mFilePath;
+	private ViewFlipper mViewFlipper = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.file_reader);
+		
+		mViewFlipper = (ViewFlipper) findViewById(R.id.viewflipper_reader);
 		
 		try {
 			mFilePath = this.getIntent().getStringExtra(SelectFileActivity.EXTRA_FILEPATH);
@@ -38,9 +44,19 @@ public class FileReader extends Activity {
 	}
 	
 	private void refreshGUI(String code) {
-		TextView tv = (TextView) findViewById(R.id.view_contents);
+		TextView tv = (TextView) createLayoutView(R.layout.reader_page);
 		String fileContent = getStringFromFile(code);
 		tv.setText(fileContent);
+		mViewFlipper.addView(tv);
+	}
+	
+	private View createLayoutView(int layoutId)
+	{
+		LayoutInflater inflater = getLayoutInflater();
+		if (null == inflater)
+			return null;
+		
+		return inflater.inflate(layoutId, null);
 	}
 	
 	public String getStringFromFile(String code) {
