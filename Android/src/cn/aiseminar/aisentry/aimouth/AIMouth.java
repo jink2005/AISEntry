@@ -62,7 +62,7 @@ public class AIMouth extends Object {
 	{
 		mSpeechSynthesizer.setParameter(SpeechConstant.ENGINE_TYPE, "local");
 		mSpeechSynthesizer.setParameter(SpeechSynthesizer.VOICE_NAME, "xiaoyan");
-		mSpeechSynthesizer.setParameter(SpeechSynthesizer.SPEED, "50");
+		mSpeechSynthesizer.setParameter(SpeechSynthesizer.SPEED, "60");
 		mSpeechSynthesizer.setParameter(SpeechSynthesizer.PITCH, "50");
 	}
 	
