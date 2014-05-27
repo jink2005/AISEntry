@@ -11,5 +11,7 @@
     <string name="browser_startdir">/sdcard</string>
     <string name="code_utf8">UTF-8</string>
     <string name="code_gb2312">GB2312</string>
+    <string name="btn_play">朗读</string>
+    <string name="btn_pause">暂停</string>
 
 </resources>

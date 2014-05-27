@@ -1,7 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/viewflipper_reader"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-</ViewFlipper>
+    <ViewFlipper
+	    android:id="@+id/viewflipper_reader"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" >
+	</ViewFlipper>
+
+	<RelativeLayout
+	    android:id="@+id/readerBtnLayout"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" >
+	    
+	    <ImageButton
+	        android:id="@+id/ibtnPlay"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:background="#00000000"
+	        android:contentDescription="@string/btn_play"
+	        android:src="@drawable/btn_play"
+	        android:layout_alignParentRight="true"
+	        android:layout_centerVertical="true" />
+
+	    <ImageButton
+	        android:id="@+id/ibtnPause"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:background="#00000000"
+	        android:contentDescription="@string/btn_pause"
+	        android:src="@drawable/btn_pause"
+	        android:visibility="invisible"
+	        android:layout_alignParentRight="true"
+	        android:layout_centerVertical="true" />
+	</RelativeLayout>
+
+</FrameLayout>

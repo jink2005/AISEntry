@@ -17,8 +17,10 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.View.OnTouchListener;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -35,6 +37,11 @@ public class FileReader extends Activity {
 	private String mFilePath;
 	private ViewFlipper mViewFlipper = null;
 	private GestureDetector mGestureDetector = null;
+	
+	private View mBtnGroupView = null;
+	private ImageButton mPlayBtn = null;
+	private ImageButton mPauseBtn = null;
+	private boolean mbSpeaking = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -44,6 +51,8 @@ public class FileReader extends Activity {
 		
 		mViewFlipper = (ViewFlipper) findViewById(R.id.viewflipper_reader);
 		mGestureDetector = new GestureDetector(this, new PageOnGestureListener());
+		
+		initButtonGroup();
 		
 		try {
 			mFilePath = this.getIntent().getStringExtra(SelectFileActivity.EXTRA_FILEPATH);
@@ -63,6 +72,27 @@ public class FileReader extends Activity {
 			setGestureListenerForView(tv);
 			mViewFlipper.addView(tv);
 		}
+	}
+	
+	private void initButtonGroup()
+	{
+		mBtnGroupView = findViewById(R.id.readerBtnLayout);
+		mPlayBtn = (ImageButton) findViewById(R.id.ibtnPlay);
+		mPlayBtn.setVisibility(View.VISIBLE);
+		mPauseBtn = (ImageButton) findViewById(R.id.ibtnPause);
+		mPauseBtn.setVisibility(View.INVISIBLE);
+		mbSpeaking = false;
+		mBtnGroupView.setVisibility(View.INVISIBLE);
+	}
+	
+	private void showButtonGroup()
+	{
+		int bShow = mBtnGroupView.getVisibility();
+		mBtnGroupView.setVisibility((View.VISIBLE == bShow) ? View.INVISIBLE : View.VISIBLE);
+		mPlayBtn.setVisibility(mbSpeaking ? View.INVISIBLE : View.VISIBLE);
+		mPauseBtn.setVisibility(mbSpeaking ? View.VISIBLE : View.INVISIBLE);
+		mPlayBtn.setOnClickListener(new PlayButtonOnClickListener());
+		mPauseBtn.setOnClickListener(new PlayButtonOnClickListener());
 	}
 	
 	private void setGestureListenerForView(View targetView)
@@ -168,6 +198,21 @@ public class FileReader extends Activity {
 			
 			return super.onFling(e1, e2, velocityX, velocityY);
 		}
-		
+
+		@Override
+		public boolean onSingleTapConfirmed(MotionEvent e) {
+			showButtonGroup();
+			return super.onSingleTapConfirmed(e);
+		}
+	}
+	
+	class PlayButtonOnClickListener implements OnClickListener
+	{
+		@Override
+		public void onClick(View v) {
+			mbSpeaking = ! mbSpeaking;
+			mPlayBtn.setVisibility(mbSpeaking ? View.INVISIBLE : View.VISIBLE);
+			mPauseBtn.setVisibility(mbSpeaking ? View.VISIBLE : View.INVISIBLE);
+		}		
 	}
 }
