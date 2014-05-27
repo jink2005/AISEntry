@@ -1,17 +1,24 @@
 package cn.aiseminar.aisentry.reader;
 
 import cn.aiseminar.aisentry.*;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Layout;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.View.OnTouchListener;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -27,6 +34,7 @@ public class FileReader extends Activity {
 	
 	private String mFilePath;
 	private ViewFlipper mViewFlipper = null;
+	private GestureDetector mGestureDetector = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -35,6 +43,7 @@ public class FileReader extends Activity {
 		setContentView(R.layout.file_reader);
 		
 		mViewFlipper = (ViewFlipper) findViewById(R.id.viewflipper_reader);
+		mGestureDetector = new GestureDetector(this, new PageOnGestureListener());
 		
 		try {
 			mFilePath = this.getIntent().getStringExtra(SelectFileActivity.EXTRA_FILEPATH);
@@ -44,10 +53,28 @@ public class FileReader extends Activity {
 	}
 	
 	private void refreshGUI(String code) {
-		TextView tv = (TextView) createLayoutView(R.layout.reader_page);
 		String fileContent = getStringFromFile(code);
-		tv.setText(fileContent);
-		mViewFlipper.addView(tv);
+		int curOffset = 0;
+		
+		for (int i = 0; i < 1; i ++)
+		{
+			TextView tv = (TextView) createLayoutView(R.layout.reader_page);
+			tv.setText(fileContent.substring(curOffset));
+			setGestureListenerForView(tv);
+			mViewFlipper.addView(tv);
+		}
+	}
+	
+	private void setGestureListenerForView(View targetView)
+	{
+		targetView.setLongClickable(true);
+		targetView.setOnTouchListener(new OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {				
+				return mGestureDetector.onTouchEvent(event);
+			}
+		});
 	}
 	
 	private View createLayoutView(int layoutId)
@@ -110,5 +137,37 @@ public class FileReader extends Activity {
 		}
 		return result;
 	}
-
+	
+	class PageOnGestureListener extends SimpleOnGestureListener
+	{
+		
+		@Override
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+				float velocityY) {
+			if (mViewFlipper.getChildCount() > 1)
+			{
+				int fling_min_distance = 100;
+				int fling_min_velocity = 200;
+				
+				if (Math.abs(velocityX) > fling_min_velocity)
+				{
+					if (e1.getX() - e2.getX() > fling_min_distance) // right in
+					{
+						mViewFlipper.setInAnimation(FileReader.this, R.anim.anim_right_in);
+						mViewFlipper.setOutAnimation(FileReader.this, R.anim.anim_left_out);
+						mViewFlipper.showPrevious();
+					}
+					else if (e2.getX() - e1.getX() > fling_min_distance) // left in
+					{
+						mViewFlipper.setInAnimation(FileReader.this, R.anim.anim_left_in);
+						mViewFlipper.setOutAnimation(FileReader.this, R.anim.anim_right_out);
+						mViewFlipper.showNext();
+					}
+				}
+			}		
+			
+			return super.onFling(e1, e2, velocityX, velocityY);
+		}
+		
+	}
 }

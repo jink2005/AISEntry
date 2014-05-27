@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/paper"
     android:padding="15dip"
-    android:textSize="25sp" >
+    android:textSize="25sp"
+    android:textIsSelectable="true" >
 
 </TextView>
