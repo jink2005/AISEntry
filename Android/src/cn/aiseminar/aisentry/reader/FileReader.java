@@ -81,6 +81,15 @@ public class FileReader extends Activity {
 		super.onStart();
 	}
 	
+	@Override
+	protected void onDestroy() {
+		if (null != mMouth)
+		{
+			mMouth.stop();
+		}
+		super.onDestroy();
+	}
+
 	private void refreshGUI(String code) {
 		String fileContent = getStringFromFile(code);
 		int curOffset = 0;
