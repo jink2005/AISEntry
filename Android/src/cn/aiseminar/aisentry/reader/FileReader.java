@@ -1,16 +1,18 @@
 package cn.aiseminar.aisentry.reader;
 
 import cn.aiseminar.aisentry.*;
-
+import cn.aiseminar.aisentry.aimouth.AIMouth;
+import cn.aiseminar.aisentry.aimouth.AIMouth.TTS_State;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
-import android.text.Layout;
+import android.os.Handler;
+import android.os.Message;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.LayoutInflater;
@@ -34,20 +36,27 @@ public class FileReader extends Activity {
 	private static final String utf8 = "UTF-8";
 	private static final String defaultCode = gb2312;
 	
-	private String mFilePath;
 	private ViewFlipper mViewFlipper = null;
 	private GestureDetector mGestureDetector = null;
-	
+	// for speak control
 	private View mBtnGroupView = null;
 	private ImageButton mPlayBtn = null;
 	private ImageButton mPauseBtn = null;
 	private boolean mbSpeaking = false;
+	private AIMouth mMouth = null;
+	private Handler mMsgHandler = null;
+	// for file reading
+	private String mFilePath;
+	private int mSpeakOffset = 0;
+	private int mSpeakingLength = 0;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.file_reader);
+		
+		mMsgHandler = new AISHandler();
 		
 		mViewFlipper = (ViewFlipper) findViewById(R.id.viewflipper_reader);
 		mGestureDetector = new GestureDetector(this, new PageOnGestureListener());
@@ -59,6 +68,17 @@ public class FileReader extends Activity {
 			refreshGUI(defaultCode);
 		} catch (Exception e) {
 		}
+	}
+	
+	@Override
+	protected void onStart() {
+		if (null == mMouth)
+		{
+			mMouth = AIMouth.getMouth(this);
+		}
+		mMouth.setMsgHandler(mMsgHandler);
+		
+		super.onStart();
 	}
 	
 	private void refreshGUI(String code) {
@@ -137,6 +157,32 @@ public class FileReader extends Activity {
 		}
 		return null;
 	}
+	
+	public void speakNextString()
+	{
+		mSpeakOffset += mSpeakingLength;
+		TextView tv = (TextView) mViewFlipper.getCurrentView();
+		String content = tv.getText().toString().trim();
+		
+		int endPos = content.indexOf('\n', mSpeakOffset);
+		while (endPos == mSpeakOffset) // skip blank line
+		{
+			mSpeakOffset ++;
+			endPos = content.indexOf('\n', mSpeakOffset);
+		}
+		
+		if (-1 == endPos && mSpeakOffset < content.length()) // the last line of file
+		{
+			endPos = content.length();
+		}
+		
+		if (endPos > mSpeakOffset)
+		{
+			content = content.substring(mSpeakOffset, endPos);
+			mSpeakingLength = content.length();
+			mMouth.speak(content);
+		}
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -168,6 +214,8 @@ public class FileReader extends Activity {
 		return result;
 	}
 	
+	/* help classes */
+	
 	class PageOnGestureListener extends SimpleOnGestureListener
 	{
 		
@@ -194,7 +242,7 @@ public class FileReader extends Activity {
 						mViewFlipper.showNext();
 					}
 				}
-			}		
+			}
 			
 			return super.onFling(e1, e2, velocityX, velocityY);
 		}
@@ -204,15 +252,57 @@ public class FileReader extends Activity {
 			showButtonGroup();
 			return super.onSingleTapConfirmed(e);
 		}
+
+		@Override
+		public boolean onScroll(MotionEvent e1, MotionEvent e2,
+				float distanceX, float distanceY) {
+			return super.onScroll(e1, e2, distanceX, distanceY);
+		}
 	}
 	
 	class PlayButtonOnClickListener implements OnClickListener
 	{
 		@Override
 		public void onClick(View v) {
+			if (mbSpeaking)
+			{
+				// now user paused
+				mSpeakingLength = 0; // will reading from last offset
+				mMouth.stop();
+			}
+			else
+			{
+				TextView tv = (TextView) mViewFlipper.getCurrentView();
+				String content = tv.getText().toString().trim();
+				if (mSpeakOffset >= content.length())
+				{
+					mSpeakOffset = 0;
+					mSpeakingLength = 0;
+				}
+				speakNextString();
+			}
+			
 			mbSpeaking = ! mbSpeaking;
 			mPlayBtn.setVisibility(mbSpeaking ? View.INVISIBLE : View.VISIBLE);
 			mPauseBtn.setVisibility(mbSpeaking ? View.VISIBLE : View.INVISIBLE);
 		}		
 	}
+	
+	@SuppressLint("HandlerLeak")
+	class AISHandler extends Handler
+    {
+		@Override
+		public void handleMessage(Message msg) {
+			if (AISMessageCode.MOUTH_MSG_BASE + TTS_State.TTS_SPEAK_COMPLETED.ordinal() == msg.what)
+			{
+				if (null != mMouth)
+				{
+					speakNextString();
+				}
+				return;
+			}
+			
+			super.handleMessage(msg);
+		}
+    }
 }

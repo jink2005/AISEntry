@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cn.aiseminar.aisentry"
     android:versionCode="1"
-    android:versionName="0.0.1" >
+    android:versionName="0.0.2" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -26,9 +26,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".reader.BookShelfActivity"></activity>
-        <activity android:name=".reader.SelectFileActivity"></activity>
-        <activity android:name=".reader.FileReader"></activity>
+        <activity android:name=".reader.BookShelfActivity"
+            android:screenOrientation="portrait" ></activity>
+        <activity android:name=".reader.SelectFileActivity"
+            android:screenOrientation="portrait" ></activity>
+        <activity android:name=".reader.FileReader"
+            android:screenOrientation="portrait" ></activity>
     </application>
 
 </manifest>

@@ -77,9 +77,9 @@ public class AISEntryActivity extends Activity {
         
 		if (null == mMouth)
 		{
-			mMouth = new AIMouth(this);
-			mMouth.setMsgHandler(mMsgHandler);
+			mMouth = AIMouth.getMouth(this);
 		}
+		mMouth.setMsgHandler(mMsgHandler);
 		
 		if (null == mTransceiver)
 		{
@@ -184,7 +184,6 @@ public class AISEntryActivity extends Activity {
 			}
 			return super.onSingleTapConfirmed(e);
 		} 
-		
 		
     }
 }

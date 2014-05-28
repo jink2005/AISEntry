@@ -15,6 +15,7 @@ public class AIMouth extends Object {
 		TTS_INITING,
 		TTS_READY,
 		TTS_ERROR,
+		TTS_SPEAK_COMPLETED,
 	};
 	
 	private Context mContext = null;
@@ -23,7 +24,17 @@ public class AIMouth extends Object {
 	
 	private Handler mMsgHandler = null;
 	
-	public AIMouth(Context context)
+	private static AIMouth gEntryMouth = null;
+	public static AIMouth getMouth(Context context)
+	{
+		if (null == gEntryMouth && null != context)
+		{
+			gEntryMouth = new AIMouth(context);
+		}
+		return gEntryMouth;
+	}
+	
+	private AIMouth(Context context)
 	{
 		mContext = context;
 		SpeechUtility.getUtility(mContext).setAppid(mAppId);
@@ -70,6 +81,11 @@ public class AIMouth extends Object {
 	{
 		mSpeechSynthesizer.startSpeaking(sentence, mSynthesizerListener);
 	}
+	
+	public void stop()
+	{
+		mSpeechSynthesizer.stopSpeaking(mSynthesizerListener);
+	}
 
 	private SynthesizerListener mSynthesizerListener = new SynthesizerListener.Stub() {
 		
@@ -99,8 +115,9 @@ public class AIMouth extends Object {
 		
 		@Override
 		public void onCompleted(int arg0) throws RemoteException {
-			// TODO Auto-generated method stub
-			
+			Message mess = new Message();
+			mess.what = AISMessageCode.MOUTH_MSG_BASE + TTS_State.TTS_SPEAK_COMPLETED.ordinal();
+			mMsgHandler.sendMessage(mess);
 		}
 		
 		@Override
